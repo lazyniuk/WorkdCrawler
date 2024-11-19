@@ -9,7 +9,7 @@ from queue import Queue
 import argparse
 
 URLS_FILE = 'urls.txt'
-DAYS_THRESHOLD = 7
+DAYS_THRESHOLD = 2
 MAX_REQUESTS_PER_DOMAIN_PER_MINUTE = 60
 MAX_CONCURRENT_REQUESTS = 10
 
