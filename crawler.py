@@ -43,6 +43,23 @@ def is_posted_recently(posted_on):
         return True
     return False
 
+def parse_posted_date(posted_on):
+    """
+    Parses the 'postedOn' field to create a sort key.
+    """
+    posted_on = posted_on.replace('Posted ', '').strip()
+    if 'Today' in posted_on:
+        return 0
+    elif 'Yesterday' in posted_on:
+        return 1
+    elif 'Days Ago' in posted_on:
+        try:
+            days = int(posted_on.split(' ')[0])
+            return days
+        except ValueError:
+            return float('inf')
+    return float('inf')
+
 def fetch_jobs(session, url, search_text):
     base_url = '/'.join(url.split('/')[:3])
     career_site_path = url.split('/')[-1]
@@ -86,8 +103,6 @@ def fetch_jobs(session, url, search_text):
     finally:
         time.sleep(random.uniform(1, 3))
 
-
-
 def worker(domain_queue, search_text):
     session = requests.Session()
     while True:
@@ -97,6 +112,15 @@ def worker(domain_queue, search_text):
         domain, url = item
         fetch_jobs(session, url, search_text)
         domain_queue.task_done()
+
+def save_sorted_jobs(output_file):
+    with jobs_lock:
+        sorted_jobs = sorted(filtered_jobs, key=lambda job: parse_posted_date(job['postedOn']))
+
+    with open(output_file, 'w') as f:
+        json.dump(sorted_jobs, f, indent=4)
+
+    print(f'Filtered jobs saved to {output_file}')
 
 def main():
     parser = argparse.ArgumentParser(description="Crawl Workday job postings.")
@@ -128,11 +152,7 @@ def main():
     for t in threads:
         t.join()
 
-    with open(output_file, 'w') as f:
-        json.dump(filtered_jobs, f, indent=4)
-
-    print(f'Filtered jobs saved to {output_file}')
-
+    save_sorted_jobs(output_file)
 
 if __name__ == '__main__':
     main()
