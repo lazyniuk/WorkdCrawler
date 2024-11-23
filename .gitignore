@@ -163,3 +163,4 @@ cython_debug/
 
 urls.txt
 *_jobs.json
+filter_keywords.txt
