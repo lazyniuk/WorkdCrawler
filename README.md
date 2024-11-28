@@ -6,4 +6,7 @@ This script crawls Workday job postings from a list of URLs and filters job post
 1. Rename ```urls.txt.example``` to ```urls.txt```
 
 2. Run the script with the required job title filter:
-    ```python scraper.py --title "<JOB TITLE>"```
+    ```python scraper.py --title "<JOB TITLE>" -o all_jobs.json```
+
+3. Run the script with multi title:
+    ```python3 crawler.py -t "devops,reliability,platform" -o all_jobs.json```
