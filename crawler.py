@@ -39,7 +39,7 @@ def load_filter_keywords():
             pass
     with open(FILTER_KEYWORDS_FILE, 'r') as f:
         filter_keywords = {line.strip().lower() for line in f if line.strip()}
-    return filter_keywords
+    return filter_keywords or set()
 
 filter_keywords = load_filter_keywords()
 
@@ -70,6 +70,8 @@ def parse_posted_date(posted_on):
     return float('inf')
 
 def is_job_excluded(job):
+    if not filter_keywords:
+        return False
     fields_to_check = [job.get('title', ''), job.get('location', ''), job.get('jobUrl', '')]
     for field in fields_to_check:
         if any(keyword in field.lower() for keyword in filter_keywords):
