@@ -76,7 +76,6 @@ def is_job_excluded(job):
             return True
     return False
 
-
 def fetch_jobs(session, url, titles):
     base_url = '/'.join(url.split('/')[:3])
     career_site_path = url.split('/')[-1]
@@ -88,6 +87,10 @@ def fetch_jobs(session, url, titles):
         'Referer': referer_url,
     })
     domain = urlparse(url).netloc
+
+    search_text = " OR ".join(titles)
+    payload['searchText'] = search_text
+
     try:
         response = session.post(api_url, json=payload)
         response.raise_for_status()
